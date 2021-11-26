@@ -1,4 +1,4 @@
--- This is a trigger used to make sure that the tuple inseryed in publisher
+-- This is a trigger used to make sure that the tuple inserted in publisher
 -- is not already in the user_account table due to the disjoint between the
 -- two, i.e.: a publisher and a user_account is an entity, but they're not
 -- each other (publisher can't be a user and vice versa)
