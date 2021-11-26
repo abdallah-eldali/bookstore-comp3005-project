@@ -1,3 +1,4 @@
+--TODO: test this
 create table user_phone(
 	email int,
 	phone_number varchar(10),
