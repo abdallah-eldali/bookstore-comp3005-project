@@ -1,6 +1,6 @@
 --TODO: test this
 create table user_phone(
-	email int,
+	email 		 varchar(50),
 	phone_number varchar(10),
 	
 	primary key (email, phone_number),
