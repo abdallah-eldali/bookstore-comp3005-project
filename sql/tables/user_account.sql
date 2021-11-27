@@ -1,4 +1,3 @@
---TODO: test this
 create table user_account(
     user_email varchar(50),
     password   varchar(50) not null,
