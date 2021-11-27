@@ -1,5 +1,5 @@
 --TODO: test this
-create table user_phone(
+create table entity_phone(
 	email 		 varchar(50),
 	phone_number varchar(10),
 	
