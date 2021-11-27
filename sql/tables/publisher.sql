@@ -1,4 +1,3 @@
---TODO: test this
 create table publisher(
     publisher_email varchar(50),
 
