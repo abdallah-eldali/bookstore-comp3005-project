@@ -5,7 +5,6 @@
 
 --NOTE: This has to be run AFTER we create all the schema
 
---TODO: We need to test this
 
 --we need this trigger function so the trigger can work
 create or replace function check_user_not_publisher() 
