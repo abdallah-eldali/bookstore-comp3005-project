@@ -4,5 +4,5 @@ create table entity(
     email varchar(50) unique not null,
     name  varchar(20) not null,
 
-    primary key (entity)
+    primary key (email)
 );
