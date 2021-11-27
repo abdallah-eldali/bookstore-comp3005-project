@@ -1,4 +1,3 @@
---TODO: test this
 create table customer(
     customer_email varchar(50),
 

@@ -1,4 +1,3 @@
---TODO: test this
 create table owner(
     owner_email varchar(50),
 
