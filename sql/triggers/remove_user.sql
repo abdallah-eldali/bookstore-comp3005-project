@@ -10,7 +10,7 @@ create or replace function remove_user_in_entity()
 as
 $$
 begin
-    --delete the publisher from the entity table
+    --delete the user from the entity table
     delete from entity
     where email=old.user_email;
 
