@@ -3,7 +3,7 @@ create table entity_phone(
 	phone_number varchar(10),
 	
 	--phone_number should always be 10 characters long 
-	--(assuming only Canada phone numbers allowed)
+	--(assuming only Canadian phone numbers allowed)
 	check (length(phone_number) = 10),
 
 	primary key (email, phone_number),

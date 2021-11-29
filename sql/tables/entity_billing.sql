@@ -5,5 +5,5 @@ create table entity_billing(
 
     primary key (email, card_number),
     foreign key (email) references entity,
-    foreign key (card_number) referecnes billing
+    foreign key (card_number) references billing
 );
