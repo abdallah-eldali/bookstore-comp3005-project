@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+</head>
+<body>
+    <form action="http://localhost:8000/register" method="post">
+        <div class="register_container">
+            <label for="user_email"><b>Email</b></label>
+            <input id="user_email" type="text" placeholder="Enter Email" name="user_email" required>
+            <br>
+            <label for="password"><b>Password</b></label>
+            <input id="password" type="password" placeholder="Enter Password" name="password" required>
+            <br>
+            <label for="name"><b>Full Name</b></label>
+            <input id="name" type="text" placeholder="Enter Name" name="name" required>
+            <br>
+            <label for="full_address"><b>Address</b></label>
+            <input id="full_address" type="text" placeholder="Enter Address" name="full_address" required>
+            <br>
+            <label for="phone_number"><b>Phone Number (10 digits)</b></label>
+            <input id="phone_number" 
+                   type="text" 
+                   placeholder="Enter Phone Number" 
+                   name="phone_number" 
+                   minlength="10"
+                   maxlength="10"
+                   size="10"
+                   pattern="[0-9]+"
+                   required>
+            <br>
+            <label for="card_number"><b>Card Number (8 digits)</b></label>
+            <input id="card_number" 
+                   type="text" 
+                   placeholder="Enter Card Number" 
+                   name="card_number" 
+                   minlength="8"
+                   maxlength="8"
+                   size="8"
+                   pattern="[0-9]+"
+                   required>
+            <br>
+            <label for="owner"><b>Owner</b></label>
+            <input type="radio" value="owner" name="user_type" required>
+            <br>
+            <label for="customer"><b>Customer</b></label>
+            <input type="radio" value="customer" name="user_type" required>
+            <br>
+            <button type="submit" >Register</button>
+        </div>
+    </form>
+</body>
+<script>
+    console.log("Error")
+</script>
+</html>

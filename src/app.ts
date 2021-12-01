@@ -5,7 +5,7 @@
 
 import express from 'express';
 import session from 'express-session';
-import { checkIfCustomerExists } from './database';
+import { checkIfCustomerExists, registerUser } from './database';
 import path from 'path';
 import bodyParser from 'body-parser';
 
@@ -33,10 +33,17 @@ app.use(session({
     saveUninitialized: true
 }));
 
-//Send the login page
+//Redirect to /login when trying to access /
 app.get("/", function(req, res){
+    res.redirect("/login");
+});
+
+//Send the login page
+app.get("/login", function(req, res){
     res.sendFile(path.join(publicDir, "login.html"));
 });
+
+//TODO: Maybe add an else if statement for if it's an owner and send the owner to a different page
 
 //This is where we recieve the login information inside req
 app.post("/login", async function(req, res){
@@ -53,6 +60,21 @@ app.post("/login", async function(req, res){
         console.log(err);
     }
 });
+
+//Send them the HTML when user wants to register as an owner or customer
+app.get("/register", function(req, res){
+    res.sendFile(path.join(publicDir, "register.html"))
+});
+
+app.post("/register", async function(req, res){
+    try{
+        let body = req.body;
+        registerUser(body.user_email, body.password, body.name, body.full_address, body.phone_number, body.card_number, body.user_type);
+    }catch (err){
+        console.error(err);
+    }
+});
+
 
 //Server execution
 app.listen(8000, function(){
