@@ -49,14 +49,14 @@ app.get("/login", function(req, res){
 app.post("/login", async function(req, res){
     try{
         //console.log(req.body.user_email);
-        if (await checkIfCustomerExists(req.body.user_email, req.body.password)){
+        if(await checkIfCustomerExists(req.body.user_email, req.body.password)){
             req.session.loggedin = true;
             req.session.user_email = req.body.user_email;
             res.redirect("/bookstore")
         }else{
             res.send("Invalid account")
         }
-    }catch (err){
+    }catch(err){
         console.log(err);
     }
 });
@@ -69,11 +69,25 @@ app.get("/register", function(req, res){
 app.post("/register", async function(req, res){
     try{
         let body = req.body;
-        registerUser(body.user_email, body.password, body.name, body.full_address, body.phone_number, body.card_number, body.user_type);
-    }catch (err){
+        //If the registration failed
+        if(!(await registerUser(body.user_email, body.password, body.name, body.full_address, body.phone_number, body.card_number, body.user_type))){
+            res.send("Email is already in used...");
+        }
+        //Else, redirect them to either bookstore if it's a customer or the office if owner
+        else{
+            req.session.loggedin = true;
+            req.session.user_email = body.user_email;
+            if(body.user_type === "customer"){
+                res.redirect("/bookstore");
+            }else{
+                res.send("Welcome onwer!");
+            }
+        }
+    }catch(err){
         console.error(err);
     }
 });
+
 
 
 //Server execution

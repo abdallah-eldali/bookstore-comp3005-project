@@ -8,7 +8,7 @@ const credentials = {
     user: 'postgres',
     host: 'localhost',
     database: 'project',
-    password: 'XXXXXXX', //Change this to your password
+    password: 'XXXXXX', //Change this to your password
     port: 5432
 }
 
@@ -27,8 +27,14 @@ export async function checkIfCustomerExists(email: string, password: string): Pr
     return (await pool.query(query, values)).rows[0].check_customer;
 }
 
-//TODO: maybe add a boolean value return? So they can get a message?
-export async function registerUser(email: string, password: string, name: string, full_address: string, phone_number: string, card_number: string, user_type: string){
+//Returns true if the query succeded, false otherwise
+export async function registerUser(email: string, 
+                                   password: string, 
+                                   name: string, 
+                                   full_address: string, 
+                                   phone_number: string, 
+                                   card_number: string, 
+                                   user_type: string): Promise<boolean>{
     const values : string[] = [email, name, password, card_number, full_address, phone_number];
     let query : string;
     if (user_type === "owner"){
@@ -43,5 +49,11 @@ export async function registerUser(email: string, password: string, name: string
         `
     }
 
-    console.log(await pool.query(query, values));
+    try{
+        await pool.query(query, values);
+        return true;
+    } catch(err){
+        console.log(err);
+        return false;
+    }
 }
