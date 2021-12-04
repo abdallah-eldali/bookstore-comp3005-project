@@ -3,7 +3,6 @@
  */
 
 import { Pool } from 'pg';
-import internal from 'stream';
 
 const credentials = {
     user: 'postgres',
