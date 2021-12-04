@@ -26,6 +26,5 @@ and go to `http://localhost:8000` in the browser.
 # TODO
 
 - Create a trigger that check that publisher_email and owner_email/customer_email are not the same and vice versa (due to disjoint)
-- Create a function that checks if owner is an customer and vice versa and create two triggers that us it
 - Do the same for author/owner and author/customer
 - Write all the SQL queries in database.ts to a query folder
