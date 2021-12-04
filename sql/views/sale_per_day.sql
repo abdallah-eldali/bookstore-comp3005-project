@@ -15,7 +15,7 @@ begin
 end;
 $$;
 
-
-create materialized view sale_per_day(day, sales) as 
+--Maybe we need to change this to a view as materialized doesn't update as often...
+create view sale_per_day(day, sales) as 
 	select distinct order_date, sale_on_day(order_date)
 	from order_table;

@@ -1,7 +1,7 @@
 -- Test
 
 --Maybe it needs to be a view because it doesn't update as often...
-create materialized view customer_book_view(isbn, title, number_pages, price, publisher, author, genre, quantity) as
+create view customer_book_view(isbn, title, number_pages, price, publisher, author, genre, quantity) as
 	select isbn, 
 		   title,
 		   number_pages,
