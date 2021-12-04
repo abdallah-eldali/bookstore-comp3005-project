@@ -5,7 +5,7 @@
 
 import express from 'express';
 import session from 'express-session';
-import { checkIfCustomerExists, registerUser } from './database';
+import { checkIfCustomerExists, registerUser, getBook, getAllBooks, insertIntoBasket, getBasket, checkoutOrder, getOrders } from './database';
 import path from 'path';
 import bodyParser from 'body-parser';
 
@@ -21,6 +21,10 @@ declare module 'express-session' {
 const app = express();
 
 const publicDir = path.join(__dirname, '/public');
+const viewDir = path.join(__dirname, '/view');
+
+app.set('views', viewDir);
+app.set('view engine', 'pug')
 
 //These two lines are used to pass information from server to client
 app.use(bodyParser.urlencoded({extended : true}));
@@ -88,9 +92,84 @@ app.post("/register", async function(req, res){
     }
 });
 
+app.get("/bookstore", async function(req, res){
+    try{
+        if(!req.session.loggedin){
+            res.redirect('/login');
+        }else{
+            console.log("Rendering all books");
+            res.render('bookstore', {books: (await getAllBooks())});
+        }
+    }catch(err){
+        console.error(err);
+    }
+});
 
+app.get("/bookstore/search", async function(req, res){
+    try{
+        res.render('bookstore', {books: (await getBook(req.query))});
+    }catch(err){
+        console.error(err);
+    }
+});
+
+app.post("/basket", async function(req, res){
+    try{
+        if(!req.session.loggedin || !req.session.user_email){
+            res.redirect('/login');
+        }else{
+            await insertIntoBasket(req.body.isbn, req.session.user_email, req.body.amount); 
+        }
+    }catch(err){
+        console.error(err);
+    }
+});
+
+app.get("/basket", async function(req, res){
+    try{
+        if(!req.session.loggedin || !req.session.user_email){
+            res.redirect('/login');
+        }else{
+            res.render("basket", {basket: (await getBasket(req.session.user_email))});
+        }
+    }catch(err){
+        console.error(err);
+    }
+});
+
+//TODO: Finish this
+app.post('/checkout', async function(req, res){
+    
+    try{
+        if(!req.session.loggedin || !req.session.user_email){
+            res.redirect('/login');
+        }else{
+            if(await checkoutOrder(req.session.user_email, req.body.address, req.body.card_number)){
+                res.send("You order will be delivered in 10 days...");
+            }else{
+                res.send("Your basket is empty");
+            }
+        }
+    }catch(err){
+        console.error(err);
+    }
+});
+
+app.get('/orders', async function(req, res){
+    try{
+        if(!req.session.loggedin || !req.session.user_email){
+            res.redirect('/login');
+        }else{
+            res.render('order', {orders: (await getOrders(req.session.user_email))});
+        }
+    }catch(err){
+        console.error(err);
+    }
+});
 
 //Server execution
 app.listen(8000, function(){
     console.log("Server is running at: http://localhost:8000");
 });
+
+//checkoutOrder('abdallah@gmail.com', '246', '12345678');

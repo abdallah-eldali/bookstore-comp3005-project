@@ -2,9 +2,9 @@ create table owner(
     owner_email  varchar(50),
     name         varchar(50) not null,
     password     varchar(50) not null,
-    card_number  varchar(50) not null,
+    card_number  varchar(8) not null,
     full_address varchar(50) not null,
-    phone_number varchar(50) not null,
+    phone_number varchar(10) not null,
 
     --phone_number should always be 10 characters long 
 	--(assuming only Canadian phone numbers allowed)

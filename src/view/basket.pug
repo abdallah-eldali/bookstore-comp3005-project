@@ -1,0 +1,27 @@
+doctype html
+html(lang='en')
+    head 
+        title Basket
+    body 
+        h1 Basket
+        a(href='/orders') Orders 
+        a(href='/bookstore') bookstore
+        
+        table(style='width:100%', border='1')
+            tr
+                th ISBN 
+                th Quantity
+            
+            each book in basket
+                tr  
+                    td  #{book.isbn}
+                    td  #{book.quantity}
+        form(method='post' action='/checkout')
+            //input(type='hidden' name='customer_email' value=basket.customer_email)
+            label Address:
+            input(name='address')
+            br
+            label Card Number (8 digits):
+            input(name='card_number' minlength='8' maxlength='8' size='8' pattern="[0-9]+")
+            br
+            button(type='submit') Checkout

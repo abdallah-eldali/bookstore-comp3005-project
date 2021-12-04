@@ -1,0 +1,26 @@
+table(style='width:100%', border='1')
+    tr 
+        th ISBN 
+        th Title 
+        th Genre(s)
+        th Number of pages
+        th Author(s)
+        th Publisher
+        th Price 
+        th Quantity 
+        th 
+    each book in books
+        tr
+            td #{book.isbn}
+            td #{book.title} 
+            td #{book.genre} 
+            td #{book.number_pages}
+            td #{book.author}
+            td #{book.publisher}
+            td #{book.price}
+            td #{book.quantity}
+            td
+                form(method='post' action='/basket')
+                    input(type='hidden' name='isbn' value=book.isbn)
+                    input(type='number' name='amount' min='1' max=book.quantity value='1')
+                    button(type='submit') Add to Basket

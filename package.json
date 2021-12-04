@@ -22,7 +22,8 @@
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "pg": "^8.7.1",
-    "pg-hstore": "^2.3.4"
+    "pg-hstore": "^2.3.4",
+    "pug": "^3.0.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",

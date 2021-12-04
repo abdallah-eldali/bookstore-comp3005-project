@@ -10,7 +10,8 @@ create table book(
     cover_image     bytea default null,
 
     -- checks on the table
-    check (price > 0 and number_pages > 0 and quantity > 0 and cost > 0),
+    --NOTE: quantity can be 0...
+    check (price > 0 and number_pages > 0 and quantity >= 0 and cost > 0),
     check (percent_sale < 1.00 and percent_sale >= 0.00), 
     check (price > cost), -- we need to be making a profit
 

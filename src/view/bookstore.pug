@@ -1,0 +1,22 @@
+doctype html
+html(lang='en')
+    head 
+        title Book Store 
+    body 
+        h1 Book Store 
+        a(href='/orders') Orders 
+        a(href='/basket') Basket
+        
+        form(method='get' action='/bookstore/search')
+            label ISBN (digits only):
+            input(name="isbn" pattern="[0-9]+")
+            br
+            label Title:
+            input(name="title")
+            br
+            label Genre: 
+            input(name="genre")
+            br
+            button(type='submit') Search
+
+        include book.pug
