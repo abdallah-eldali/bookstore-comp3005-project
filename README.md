@@ -23,3 +23,5 @@ To install all modules necessary...
 - Change the phone_number and card_number varchar
 - Create a function that checks if owner is an customer and vice versa and create two triggers that us it
 - Do the same for author/owner and author/customer
+
+TODO: OWNER ADDING BOOKS, REMOVING THEM AND SEEING REPORT!

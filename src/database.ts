@@ -9,7 +9,7 @@ const credentials = {
     user: 'postgres',
     host: 'localhost',
     database: 'project',
-    password: '***REMOVED***', //Change this to your password
+    password: 'XXXXXXXX', //Change this to your password
     port: 5432
 }
 
