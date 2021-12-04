@@ -5,7 +5,21 @@
 
 import express from 'express';
 import session from 'express-session';
-import { checkIfCustomerExists, registerUser, getBook, getAllBooks, insertIntoBasket, getBasket, checkoutOrder, getOrders } from './database';
+import { checkIfCustomerExists, 
+         registerUser, 
+         getBook, 
+         getAllBooks, 
+         insertIntoBasket, 
+         getBasket, 
+         checkoutOrder, 
+         getOrders, 
+         checkIfOwnerExists,
+         getSalesPerDay,
+         removeBook,
+         getAllPublishersEmail,
+         createPublisher,
+         addBook,
+         getSalesBetween } from './database';
 import path from 'path';
 import bodyParser from 'body-parser';
 
@@ -57,7 +71,13 @@ app.post("/login", async function(req, res){
             req.session.loggedin = true;
             req.session.user_email = req.body.user_email;
             res.redirect("/bookstore")
-        }else{
+        }
+        else if (await checkIfOwnerExists(req.body.user_email, req.body.password)){
+            req.session.loggedin = true;
+            req.session.user_email = req.body.user_email;
+            res.redirect("/office")
+        }
+        else{
             res.send("Invalid account")
         }
     }catch(err){
@@ -84,7 +104,7 @@ app.post("/register", async function(req, res){
             if(body.user_type === "customer"){
                 res.redirect("/bookstore");
             }else{
-                res.send("Welcome onwer!");
+                res.redirect('/office');
             }
         }
     }catch(err){
@@ -167,9 +187,86 @@ app.get('/orders', async function(req, res){
     }
 });
 
+app.get('/office', async function(req, res){
+    try{
+        if(!req.session.loggedin || !req.session.user_email){
+            res.redirect('/login');
+        }else{
+            res.render('office', {sales: (await getSalesPerDay())});
+        }
+    }catch(err){
+        console.error(err);
+    }
+});
+
+app.get('/office/remove-book', async function(req, res){
+    res.render('remove-book', {books: (await getAllBooks())});
+});
+
+app.post('/office/remove-book', async function(req, res){
+    //Remove book
+    await removeBook(req.body.isbn);
+    //Re-render
+    res.redirect('/office/remove-book');
+});
+
+app.get('/office/add-book', async function(req, res){
+    try{
+        res.render('add-book', {publisher_emails: (await getAllPublishersEmail())});
+    }catch(err){
+        console.error(err);
+    }
+});
+
+//TODO:
+// 1. Parse the authors and genres (comma separated) to an array
+// 2. Check if the authors exist, in author table, if so, just link them in book_author
+//    else, create the new author(s) and link them
+// 3. Add the genres to book_genre
+// 4. Check if a publisher_name was selected, if not, use the form information instead
+app.post('/office/add-book', async function(req, res){
+    try{
+        let book = req.body;
+        await addBook(book.title, 
+                      book.number_pages, 
+                      book.quantity,
+                      book.price,
+                      book.cost,
+                      book.percent_sale,
+                      book.publisher_email,
+                      book.genre.split(','),
+                      book.author.split(','));
+        console.log('Book has been created');
+        res.redirect('/office/add-book');
+    }catch(err){
+        console.error(err);
+    }
+});
+
+app.post('/office/add-publisher', async function(req, res){
+    try{
+        await createPublisher(req.body.publisher_email,
+                              req.body.name,
+                              req.body.card_number,
+                              req.body.full_address,
+                              req.body.phone_number)
+        res.redirect("/office/add-book");
+    }catch(err){
+        console.error(err);
+    }
+});
+
+app.get('/office/salesBetweenDays', async function(req, res){
+    let day1 = req.query.day1!;
+    let day2 = req.query.day2!; 
+    if (typeof day1 === 'string' && typeof day2 === 'string'){
+        res.send(`$${await getSalesBetween(day1, day2)}`);
+    }else{
+        res.send("Error, wrongly inputted dates, try again");
+    }
+});
+
 //Server execution
 app.listen(8000, function(){
     console.log("Server is running at: http://localhost:8000");
 });
-
-//checkoutOrder('abdallah@gmail.com', '246', '12345678');

@@ -1,0 +1,36 @@
+doctype html
+html(lang='en')
+    head 
+        title Remove Books
+    body 
+        h1 Remove Books
+        a(href='/office/add-book') Add Book 
+        br
+        a(href='/office') Office
+
+
+        table(style='width:100%', border='1')
+            tr 
+                th ISBN 
+                th Title 
+                th Genre(s)
+                th Number of pages
+                th Author(s)
+                th Publisher
+                th Price 
+                th Quantity 
+                th 
+            each book in books
+                tr
+                    td #{book.isbn}
+                    td #{book.title} 
+                    td #{book.genre} 
+                    td #{book.number_pages}
+                    td #{book.author}
+                    td #{book.publisher}
+                    td #{book.price}
+                    td #{book.quantity}
+                    td
+                        form(method='post' action='/office/remove-book')
+                            input(type='hidden' name='isbn' value=book.isbn)
+                            button(type='submit') Remove Book

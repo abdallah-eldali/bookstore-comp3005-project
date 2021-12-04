@@ -6,8 +6,7 @@ create table book(
     price           decimal(6,2) not null, -- price for customer to buy book from store.  max price: 9999.99
     cost            decimal(6,2) not null, -- price for owner to buy book from publisher. max cost: 9999.99 
     percent_sale    decimal(3,2) not null, -- percentage of sale profit given to publisher [0.00, 1.00)
-    publisher_email varchar(50),
-    cover_image     bytea default null,
+    publisher_email varchar(50)
 
     -- checks on the table
     --NOTE: quantity can be 0...

@@ -1,0 +1,33 @@
+doctype html
+html(lang='en')
+    head 
+        title Office
+    body 
+        h1 Office
+        a(href='/office/add-book') Add Book 
+        br
+        a(href='/office/remove-book') Remove Books
+        
+        form(method='get' action='/office/salesBetweenDays')
+            label Begin (YYYY-MM-dd):
+            input(name='day1'
+                  minlength='10'
+                  maxlength='10'
+                  size='10'
+                  required)
+            label End (YYYY-MM-dd):
+            input(name='day2'
+                  minlength='10'
+                  maxlength='10'
+                  size='10'
+                  required)
+            button(type='submit') Search
+
+        table(style='width:100%', border='1')
+            tr 
+                th Date 
+                th Sales 
+            each sale in sales
+                tr
+                    td #{sale.day}
+                    td $#{sale.sales} 

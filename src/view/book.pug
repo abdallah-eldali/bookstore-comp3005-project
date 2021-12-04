@@ -17,7 +17,7 @@ table(style='width:100%', border='1')
             td #{book.number_pages}
             td #{book.author}
             td #{book.publisher}
-            td #{book.price}
+            td $#{book.price}
             td #{book.quantity}
             td
                 form(method='post' action='/basket')

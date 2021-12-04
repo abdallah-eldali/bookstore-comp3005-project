@@ -27,6 +27,14 @@ export async function checkIfCustomerExists(email: string, password: string): Pr
     return (await pool.query(query, values)).rows[0].check_customer;
 }
 
+export async function checkIfOwnerExists(email: string, password: string): Promise<boolean>{
+    const query: string = `
+        select check_owner($1, $2);
+    `;
+
+    return (await pool.query(query, [email, password])).rows[0].check_owner;
+}
+
 //Returns true if the query succeded, false otherwise
 export async function registerUser(email: string, 
                                    password: string, 
@@ -56,30 +64,6 @@ export async function registerUser(email: string,
         console.log(err);
         return false;
     }
-}
-
-//Given an object with key/value it will convert it into a SQL query
-function createWhereQuery(query: any): string{
-
-    let q = `
-        select isbn, title, 
-    `;
-
-    //Remove all attributes with empty values (null or empty)
-    Object.keys(query).forEach((key) => (query[key] === null || query[key] === '') && delete query[key])
-    
-    //Check if the query is empty after removing everthing
-    //if not empty...
-    if(!(Object.keys(query).length === 0)){
-        let whereQuery = "";
-        for (let i=0; i<Object.keys(query).length - 1; i++){
-            let attribute = query[Object.keys(query)[i]]
-            whereQuery += `${query[attribute]}=$${i} and `;
-        }
-        whereQuery += `${query[Object.keys(query)[Object.keys(query).length]]}=${Object.keys(query).length}`;
-    }
-    
-    return ""
 }
 
 export async function getAllBooks(): Promise<any[]>{
@@ -141,7 +125,7 @@ export async function insertIntoBasket(isbn: string, customer_email: string, amo
     if((await pool.query(query, [isbn, customer_email])).rows[0].count > 0){
         console.log("Book is already in basket, updating value");
         query = `
-            update basket set quantity = quantity + $3
+            update basket set quantity = $3
             where isbn=$1 and customer_email=$2
         `;
 
@@ -306,4 +290,125 @@ export async function getOrders(customer_email: string): Promise<any[]>{
     `;
     
     return (await pool.query(query, [customer_email])).rows;
+}
+
+
+export async function getSalesPerDay(): Promise<any[]>{
+    const query: string = `
+        select *
+        from sale_per_day;
+    `
+
+    return (await pool.query(query)).rows;
+}
+
+export async function removeBook(isbn: string): Promise<void>{
+    const query: string = `
+        delete from book
+        where isbn=$1;
+    `
+
+    await pool.query(query, [isbn]);
+}
+
+export async function getAllPublishersEmail(): Promise<any[]>{
+    const query: string = `
+        select publisher_email
+        from publisher;
+    `;
+
+    return (await pool.query(query)).rows;
+}
+
+export async function createPublisher(publisher_email: string,
+                                      name: string,
+                                      card_number: string,
+                                      full_address: string,
+                                      phone_number: string): Promise<void>{
+    const query: string =  `
+        insert into publisher(publisher_email, name, card_number, full_address, phone_number)
+        values($1, $2, $3, $4, $5);
+    `;
+
+    await pool.query(query, [publisher_email, name, card_number, full_address, phone_number]);
+}
+
+//Returns the string of the newly created author's id
+async function createAuthor(name: string): Promise<string>{
+    const query: string = `
+        insert into author(name)
+        values($1)
+        returning author_id;
+    `;
+
+    return (await pool.query(query, [name])).rows[0].author_id;
+}
+
+async function addGenreToBook(genre: string, isbn: string): Promise<void>{
+    const query: string = `
+        insert into book_genre(isbn, genre_type)
+        values($1, $2);
+    `;
+
+    await pool.query(query, [isbn, genre]);
+}
+
+async function addAuthorToBook(author_id: string, isbn: string): Promise<void>{
+    const query: string = `
+        insert into book_author(author_id, isbn)
+        values($1, $2);
+    `;
+
+    await pool.query(query, [author_id, isbn]);
+}
+
+async function createBook(title: string, 
+                          number_pages: string|number, 
+                          quantity: string|number,
+                          price: string|number,
+                          cost: string|number,
+                          percent_sale: string|number,
+                          publisher_email: string): Promise<string>{
+    const query: string = `
+        insert into book(title, number_pages, quantity, price, cost, percent_sale, publisher_email)
+        values($1, $2, $3, $4, $5, $6, $7)
+        returning isbn;
+    `;
+
+    return (await pool.query(query, [title, number_pages, quantity, price, cost, percent_sale, publisher_email])).rows[0].isbn;
+}
+
+export async function addBook(title: string, 
+                              number_pages: string|number, 
+                              quantity: string|number,
+                              price: string|number,
+                              cost: string|number,
+                              percent_sale: string|number,
+                              publisher_email: string,
+                              genres: string[],
+                              authors: string[]): Promise<void>{
+    //Create the book
+    console.log("Creating book...");
+    let isbn: string = await createBook(title, number_pages, quantity, price, cost, percent_sale, publisher_email);
+
+    //Iterate over the genres and add them to the book
+    console.log("Adding genres...")
+    for(let genre of genres){
+        await addGenreToBook(genre, isbn);
+    }
+
+    //Iterate over the authors, create them, and then add them
+    console.log("Creating and adding authors...");
+    for(let author of authors){
+        let author_id = await createAuthor(author);
+        await addAuthorToBook(author_id, isbn);
+    }
+}
+
+export async function getSalesBetween(day1: string, day2: string): Promise<string|number>{
+    const query: string = `
+        select sales_between_day($1, $2);
+    `;
+
+    return (await pool.query(query, [day1, day2])).rows[0].sales_between_day;
 }

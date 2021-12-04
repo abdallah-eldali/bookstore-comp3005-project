@@ -1,5 +1,5 @@
 create or replace function sale_on_day(day date)
-	returns decimal(10,2)
+	returns float
 	language plpgsql
 as
 $$

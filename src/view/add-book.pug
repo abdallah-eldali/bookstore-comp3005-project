@@ -1,0 +1,96 @@
+doctype html
+html(lang='en')
+    head 
+        title Add Book
+    body 
+        h1 Add Book
+        a(href='/office/remove-book') Remove Book 
+        br
+        a(href='/office') Office
+        br
+        form(action='/office/add-book' method='post')
+            label ISBN (automatically placed)
+            br
+            label Title 
+            input(name='title' required)
+            br
+            label Number of pages 
+            input(type='number'
+                  name='number_pages' 
+                  required)
+            br
+            label Genre(s)
+            input(name='genre' 
+                  required)
+            br
+            label Author(s)
+            input(name='author'
+                  required)
+            br 
+            label Quantity 
+            input(type='number'
+                  name='quantity' 
+                  required)
+            br
+            label Price $
+            input(type='number'
+                  name='price' 
+                  max='9999.99'
+                  step='0.01'
+                  required)
+            br
+            label Cost 
+            input(type='number'
+                  name='cost' 
+                  max='9999.99'
+                  step='0.01'
+                  required)
+            br
+            label Percent Sale (between 0 and 1) 
+            input(type='number'
+                  name='percent_sale' 
+                  min='0'
+                  max='1'
+                  step='0.01'
+                  required)
+            br
+            label Publisher Email 
+            select(name='publisher_email'
+                   required)
+                each publisher_email in publisher_emails 
+                    option(value=publisher_email.publisher_email) #{publisher_email.publisher_email}
+            br
+            button(type='submit') Add Book
+
+        br
+        label If Publisher doesn't exist, add it first and then add the book
+        form(action='/office/add-publisher' method='post')
+            label Publisher's Email:
+            input(name='publisher_email'
+                  required)
+            br
+            label Name:
+            input(name='name'
+                  required)
+            br
+            label Card Number:
+            input(name='card_number'
+                  minlength='8'
+                  maxlength='8'
+                  size='8'
+                  pattern='[0-9]+'
+                  required)
+            br
+            label Address:
+            input(name='full_address'
+                  required)
+            br
+            label Phone Number:
+            input(name='phone_number'
+                  minlength='10'
+                  maxlength='10'
+                  size='10'
+                  pattern='[0-9]+'
+                  required)
+            br
+            button(tupe='submit') Add Publisher
