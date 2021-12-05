@@ -1,3 +1,5 @@
+
+
 create table author(
     author_id serial,
     name      varchar(20) not null,
@@ -21,7 +23,6 @@ create table publisher(
 
     primary key (publisher_email)
 );
-
 
 create table customer(
     customer_email  varchar(50),
@@ -80,14 +81,11 @@ create table book(
     cost            decimal(6,2) not null, -- price for owner to buy book from publisher. max cost: 9999.99 
     percent_sale    decimal(3,2) not null, -- percentage of sale profit given to publisher [0.00, 1.00)
     publisher_email varchar(50),
-    cover_image     bytea default null,
 
-    -- checks on the table
-    check (price > 0 and number_pages > 0 and quantity > 0 and cost > 0),
+    check (price > 0 and number_pages > 0 and quantity >= 0 and cost > 0),
     check (percent_sale < 1.00 and percent_sale >= 0.00), 
     check (price > cost), -- we need to be making a profit
 
-    -- setting up keys
     primary key (isbn),
     foreign key (publisher_email) references publisher (publisher_email)
         on delete cascade
@@ -113,7 +111,6 @@ create table book_genre(
         on delete cascade
 );
 
-
 create table basket(
     customer_email varchar(50),
     isbn           int,
@@ -128,7 +125,6 @@ create table basket(
         on delete cascade
 );
 
--- Test
 create table book_order(
     isbn       int,
     order_id   int,
@@ -140,3 +136,177 @@ create table book_order(
     foreign key (order_id) references order_table
         on delete cascade
 );
+
+--------------------------------------------------------------------------------------
+
+-- VIEWS:
+
+create view customer_book_view(isbn, title, number_pages, price, publisher, author, genre, quantity) as
+	select isbn, 
+		   title,
+		   number_pages,
+		   price,
+		   name as publisher,
+		   array(select name from book_author natural join author where isbn=book.isbn) as author,
+		   array(select genre_type from book_genre where isbn=book.isbn) as genre,
+		   quantity
+	from book join publisher using(publisher_email);
+
+--------
+
+create or replace function sale_on_day(day date)
+	returns float
+	language plpgsql
+as
+$$
+begin
+
+	return (select sum(book_order.quantity * book.price)
+		    from book_order, book
+		    where book_order.isbn = book.isbn and book_order.order_id in (select order_id
+																		  from order_table
+																		  where order_date = day));
+	
+	
+end;
+$$;
+
+create view sale_per_day(day, sales) as 
+	select distinct order_date, sale_on_day(order_date)
+	from order_table;
+
+--------------------------------------------------------------------------------------
+
+-- Triggers:
+
+create or replace function check_basket_max_quantity()
+    returns trigger
+    language plpgsql
+as
+$$
+begin
+    if new.quantity > (select quantity from book where isbn=new.isbn) then
+        raise exception 'new row for relation "basket" violates constraint where quantity must be lower or equal to the book quantity';
+    end if;
+
+    return new;
+end;
+$$;
+
+create trigger basket_max_quantity
+before insert or update on basket
+for each row 
+execute procedure check_basket_max_quantity();
+
+--------
+
+create or replace function check_customer_not_owner() 
+	returns trigger
+	language plpgsql
+as
+$$
+begin
+	if new.customer_email in (select owner_email from owner) then 
+		raise exception 'customer_email already exists in owner';
+		
+	end if;
+	return new;
+end
+$$;
+
+create trigger customer_not_owner
+before insert on customer
+for each row
+execute procedure check_customer_not_owner();
+
+--------
+
+create or replace function check_order_new_books()
+    returns trigger
+    language plpgsql
+as
+$$
+begin
+    if new.quantity <= 10 then
+        new.quantity := greatest(11, 
+                        new.quantity + (
+                            select sum(book_order.quantity) 
+                            from (order_table natural join book_order)
+                            where isbn = new.isbn                               AND
+                                order_date >= current_date - interval '1 month' AND
+                                order_date <= current_date
+                        ) 
+        );
+
+    end if;
+    return new;
+end;
+$$;
+
+create trigger potentially_order_books
+before insert or update on book
+for each row 
+execute procedure check_order_new_books();
+
+--------
+
+create or replace function check_owner_not_customer() 
+	returns trigger
+	language plpgsql
+as
+$$
+begin
+	if new.owner_email in (select customer_email from customer) then 
+		raise exception 'owner_email already exists in customer';
+		
+	end if;
+	return new;
+end
+$$;
+
+create trigger owner_not_customer
+before insert on owner
+for each row
+execute procedure check_owner_not_customer();
+
+--------------------------------------------------------------------------------------
+
+-- FUNCTIONS:
+
+create or replace function check_customer(email varchar(50), pass varchar(50))
+	returns boolean
+	language plpgsql
+as
+$$
+begin
+	return ((select count(*) from customer where customer_email=email and password=pass) = 1);
+end;
+$$;
+
+create or replace function check_owner(email varchar(50), pass varchar(50))
+	returns boolean
+	language plpgsql
+as
+$$
+begin
+	return ((select count(*) from owner where owner_email=email and password=pass) = 1);
+end;
+$$;
+
+--------
+
+create or replace function sales_between_day(day1 date, day2 date)
+	returns float
+	language plpgsql
+as
+$$
+begin
+
+	return(select sum(sales) as total_sales
+	from sale_per_day
+	where day1 <= day and day <= day2);
+	
+end;
+$$;
+
+--------------------------------------------------------------------------------------
