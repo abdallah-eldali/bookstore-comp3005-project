@@ -21,6 +21,9 @@ insert into author values (8, 'Ronald Dahl');
 insert into author values (9, 'Dr Seuss');
 insert into author values (10, 'Fyodor Dostoevsky');
 
+--this is used to set the serial isbn to the max isbn of the inserted books
+select setval('author_author_id_seq', (select max(author_id) from author));
+
 insert into publisher values ('BrobeckPhleger&Harrison@gmail.com', 'BrobeckPhleger&Harrison', '26698055', '74 Se 3rd Ave #1494', '4163767867');
 insert into publisher values ('StaffordWilliamPIi@gmail.com', 'StaffordWilliamPIi', '39868312', '3 Bush St', '5067242777');
 insert into publisher values ('StonyCreekApartments@gmail.com', 'StonyCreekApartments', '66433838', '629 105th Ave', '9057159339');
@@ -104,6 +107,9 @@ insert into order_table values (17, 'Amie Okuniewski@gmail.com', '24 Venice Rd',
 insert into order_table values (18, 'Lajuana Mccloud@gmail.com', '7 W Pine St', '51053422', '2013-03-22 03:34 PM');
 insert into order_table values (19, 'Gussie Diflorio@gmail.com', '881 South St #4', '56979107', '2014-06-25 02:13 AM');
 
+--this is used to set the serial isbn to the max isbn of the inserted books
+select setval('order_table_order_id_seq', (select max(order_id) from order_table));
+
 insert into book values (0, 'Good Monkey Apocalypse', 435, 15, 72.98, 69.73, 0.28, 'StonyCreekApartments@gmail.com');
 insert into book values (1, 'Games Student Friendship', 438, 15, 61.43, 58.18, 0.31, 'MulliganThomasOEsq@gmail.com');
 insert into book values (2, 'Games Spice in Space', 314, 15, 67.43, 64.18, 0.29, 'MeraglioRuissellJJr@gmail.com');
@@ -124,6 +130,9 @@ insert into book values (16, 'First Hunger Love', 834, 15, 42.52, 39.27, 0.25, '
 insert into book values (17, 'Big Student Friendship', 616, 15, 47.47, 44.22, 0.55, 'CollinsFrederickHEsq@gmail.com');
 insert into book values (18, 'It Taste in Space', 210, 15, 52.09, 48.84, 0.53, 'USTsubakiInc@gmail.com');
 insert into book values (19, 'Cold Hunger Attack', 288, 15, 30.05, 26.8, 0.49, 'FinchersFindings@gmail.com');
+
+--this is used to set the serial isbn to the max isbn of the inserted books
+select setval('book_isbn_seq', (select max(isbn) from book));
 
 insert into book_author values (8, 0);
 insert into book_author values (5, 1);
