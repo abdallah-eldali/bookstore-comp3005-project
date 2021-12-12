@@ -253,6 +253,7 @@ app.post('/office/add-publisher', async function(req, res){
         res.redirect("/office/add-book");
     }catch(err){
         console.error(err);
+        res.send("Email is already in used...");
     }
 });
 
