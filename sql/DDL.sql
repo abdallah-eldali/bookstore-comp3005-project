@@ -200,24 +200,24 @@ execute procedure check_basket_max_quantity();
 
 --------
 
-create or replace function check_customer_not_owner() 
-	returns trigger
-	language plpgsql
+-- Check if the customer_email is not in owner or publisher
+create or replace function check_customer_not_owner_or_publisher()
+    returns trigger
+    language plpgsql
 as
 $$
 begin
-	if new.customer_email in (select owner_email from owner) then 
-		raise exception 'customer_email already exists in owner';
-		
-	end if;
-	return new;
-end
+    if new.customer_email in (select owner_email from owner) or new.customer_email in (select publisher_email from publisher) then
+        raise exception 'customer_email already exists in owner or publisher';
+    end if;
+    return new;
+end;
 $$;
 
-create trigger customer_not_owner
+create trigger customer_not_owner_or_publisher
 before insert on customer
 for each row
-execute procedure check_customer_not_owner();
+execute procedure check_customer_not_owner_or_publisher();
 
 --------
 
@@ -250,24 +250,50 @@ execute procedure check_order_new_books();
 
 --------
 
-create or replace function check_owner_not_customer() 
-	returns trigger
-	language plpgsql
+-- Check if owner_email is not in customer or publisher
+
+create or replace function check_owner_not_customer_or_publisher()
+    returns trigger
+    language plpgsql
 as
 $$
 begin
-	if new.owner_email in (select customer_email from customer) then 
-		raise exception 'owner_email already exists in customer';
-		
-	end if;
-	return new;
+    if new.owner_email in (select customer_email from customer) or new.owner_email in (select publisher_email from publisher) then
+        raise exception 'owner_email already exists in customer or publisher';
+    end if;
+    return new;
+end;
+$$;
+
+create trigger owner_not_customer_or_publisher
+before insert on owner
+for each row
+execute procedure check_owner_not_customer_or_publisher();
+
+--------
+
+--This is a trigger used to check if a publisher email is not in a customer table
+--and vice versa
+
+--Check if a publisher is not a customer 
+
+create or replace function check_publisher_not_customer_or_owner()
+    returns trigger
+    language plpgsql
+as
+$$
+begin
+    if new.publisher_email in (select customer_email from customer) or new.publisher_email in (select owner_email from owner) then
+        raise exception 'publisher_email already exists in customer or owner';
+    end if;
+    return new;
 end
 $$;
 
-create trigger owner_not_customer
-before insert on owner
+create trigger publisher_not_customer_or_owner
+before insert on publisher
 for each row
-execute procedure check_owner_not_customer();
+execute procedure check_publisher_not_customer_or_owner();
 
 --------------------------------------------------------------------------------------
 
