@@ -1,4 +1,3 @@
--- Test
 create table book_order(
     isbn       int,
     order_id   int,

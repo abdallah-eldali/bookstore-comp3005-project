@@ -1,4 +1,6 @@
-
+--NOTE: We recommend you to read the individual SQL files for better explanation
+--      on what each query does instead of here. This is just a file that contains
+--      all the queries in those files...
 
 create table author(
     author_id serial,

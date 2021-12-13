@@ -40,3 +40,9 @@ Finally, execute
 ```
 
 and go to `http://localhost:8000` in the browser.
+
+# SQL
+
+If you want to know more about the queries in the `DDL.sql` script then please check all the other SQL scripts as they contain
+the documentation on what each query does and what it is used for. The `DDL.sql` script is just the collection of all the other
+SQL queries in one file.

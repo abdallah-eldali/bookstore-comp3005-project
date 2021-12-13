@@ -1,4 +1,3 @@
---TEST
 create table book_author(
     author_id int,
     isbn      int,

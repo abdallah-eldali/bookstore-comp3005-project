@@ -1,6 +1,6 @@
--- Test
 
---Maybe it needs to be a view because it doesn't update as often...
+--This view is used to show the customer the important information about a book, like the publishers name, genres, authors, etc.
+--i.e.: hide unecessary info like percent sale and cost of the book since the customer doesn't need to know those...
 create view customer_book_view(isbn, title, number_pages, price, publisher, author, genre, quantity) as
 	select isbn, 
 		   title,
