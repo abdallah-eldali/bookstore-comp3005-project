@@ -20,15 +20,15 @@ const credentials = {
 
 # How to run
 
-Please make sure to have `nodejs` installed and `npm`
+Please make sure to have [`NodeJS`](https://nodejs.org/en/download/) and `npm` (comes with `NodeJS` by default) installed
 
-Install the following using `npm`
+Install the following using `npm` in your terminal:
 
 ```
 > npm install -g typescript ts-node
 ```
 
-Then, go to the directory where `package.json` is and execute in the terminal to install all modules necessary.
+Then, go to the directory of the repository/project where `package.json` is and execute in the terminal to install all modules necessary:
 
 ```
 > npm install
